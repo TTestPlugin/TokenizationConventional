@@ -1,0 +1,14 @@
+#Target for Wallet Extension UI
+target 'WalletExtensionUI' do
+    use_frameworks!
+    # Local pods for Debug/Release configurations for the extension UI
+    pod 'd1-libs-debug', :path =>'./Libs/d1-libs-debug', :configurations => ['Debug']
+    pod 'd1-libs-release', :path => './Libs/d1-libs-release', :configurations => ['Release']
+end
+#Target for Wallet Extension
+target 'WalletExtension' do
+    use_frameworks!
+    # Local pods for Debug/Release configurations for the extension
+    pod 'd1-libs-debug', :path => './Libs/d1-libs-debug', :configurations => ['Debug']
+    pod 'd1-libs-release', :path => './Libs/d1-libs-release', :configurations => ['Release']
+end

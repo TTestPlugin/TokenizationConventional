@@ -1,0 +1,14 @@
+{
+  "name": "d1-libs-debug",
+  "version": "4.0.0",
+  "homepage": "https://www.thalesgroup.com",
+  "description": "D1 framework plugin",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "dynamic-linking"
+  ],
+  "author": "vladislav.vesely@external.thalesgroup.com",
+  "license": "MIT"
+}

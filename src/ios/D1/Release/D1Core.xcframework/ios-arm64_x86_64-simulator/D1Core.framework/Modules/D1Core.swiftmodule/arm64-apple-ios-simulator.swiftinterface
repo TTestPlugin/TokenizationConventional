@@ -1,0 +1,132 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.10 (swiftlang-5.10.0.13 clang-1500.3.9.4)
+// swift-module-flags: -target arm64-apple-ios14.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -Onone -enable-bare-slash-regex -module-name D1Core
+import CommonCrypto
+@_exported import D1Core
+import Foundation
+import LocalAuthentication
+import Network
+import OSLog
+import SQLite3
+import Security
+import Swift
+import UIKit
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+public func d1LogInfo(_ message: @autoclosure () -> Any?, sensitive: (prefix: Swift.String?, string: Swift.String?) = (nil, nil), file: Swift.StaticString = #file, function: Swift.StaticString = #function, subsystem: D1Core.LogSubsystem = .unidentify, ff: Swift.StaticString = #file)
+public func d1LogError(_ message: @autoclosure () -> Any?, sensitive: (prefix: Swift.String?, string: Swift.String?) = (nil, nil), file: Swift.StaticString = #file, function: Swift.StaticString = #function, subsystem: D1Core.LogSubsystem = .unidentify)
+extension D1Core.D1CAuthn {
+  @objc dynamic open func unenrollAuthnCredentials(completion: @escaping (((any Swift.Error)?) -> Swift.Void))
+}
+public class TransactionRecord : Swift.Decodable {
+  final public let transactionId: Swift.String
+  final public let type: D1Core.TransactionType
+  final public let transmissionDate: Swift.String
+  final public let status: D1Core.TransactionStatus
+  final public let declinedReason: Swift.String?
+  final public let declinedDetails: Swift.String?
+  final public let amount: Swift.Int
+  final public let currencyCode: Swift.String
+  final public let billingAmount: Swift.Int?
+  final public let billingCurrencyCode: Swift.String?
+  final public let conversionRate: Swift.Double?
+  final public let replacementAmount: Swift.Int?
+  final public let replacementCurrencyCode: Swift.String?
+  final public let merchant: D1Core.Merchant
+  final public let accountNumber: Swift.String?
+  final public let digitalCard: D1Core.TransactionDigitalCard?
+  final public let isOnlinePayment: Swift.Bool?
+  final public let isContactless: Swift.Bool?
+  final public let isMagstripe: Swift.Bool?
+  final public let isAbroadPayment: Swift.Bool?
+  final public let initiatingParty: D1Core.InitiatingParty?
+  @objc deinit
+  required public init(from decoder: any Swift.Decoder) throws
+}
+public class Merchant : Swift.Decodable {
+  final public let merchantId: Swift.String
+  final public let name: Swift.String?
+  final public let city: Swift.String?
+  final public let countryCode: Swift.String?
+  final public let merchantType: Swift.String?
+  final public let merchantNameAndAddress: Swift.String?
+  @objc deinit
+  required public init(from decoder: any Swift.Decoder) throws
+}
+public enum TransactionType : Swift.String, Swift.Decodable {
+  case refund
+  case purchase
+  case withdrawal
+  case payment
+  case other
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public class TransactionDigitalCard : Swift.Decodable {
+  final public let digitalCardId: Swift.String?
+  final public let walletId: Swift.String?
+  final public let walletName: Swift.String?
+  @objc deinit
+  required public init(from decoder: any Swift.Decoder) throws
+}
+public enum TransactionStatus : Swift.String, Swift.Decodable {
+  case approved
+  case partiallyApproved
+  case declined
+  case reversed
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum InitiatingParty : Swift.String, Swift.Decodable {
+  case merchant
+  case cardholder
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+@objc public enum LogSubsystem : Swift.Int {
+  case d1core = 0x00
+  case d1sdk = 0x01
+  case unidentify = 0xFF
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+extension os.OSLogType {
+  public var prefix: Swift.String {
+    get
+  }
+  public var suffix: Swift.String {
+    get
+  }
+}
+public class TransactionQuery {
+  public init()
+  @objc deinit
+}
+extension D1Core.D1CCardClient {
+  public func transactionHistory(cardId: Swift.String, query: D1Core.TransactionQuery, completion: @escaping ([D1Core.TransactionRecord]?, (any Swift.Error)?) -> Swift.Void)
+}
+extension D1Core.TransactionType : Swift.Equatable {}
+extension D1Core.TransactionType : Swift.Hashable {}
+extension D1Core.TransactionType : Swift.RawRepresentable {}
+extension D1Core.TransactionStatus : Swift.Equatable {}
+extension D1Core.TransactionStatus : Swift.Hashable {}
+extension D1Core.TransactionStatus : Swift.RawRepresentable {}
+extension D1Core.InitiatingParty : Swift.Equatable {}
+extension D1Core.InitiatingParty : Swift.Hashable {}
+extension D1Core.InitiatingParty : Swift.RawRepresentable {}
+extension D1Core.LogSubsystem : Swift.Equatable {}
+extension D1Core.LogSubsystem : Swift.Hashable {}
+extension D1Core.LogSubsystem : Swift.RawRepresentable {}

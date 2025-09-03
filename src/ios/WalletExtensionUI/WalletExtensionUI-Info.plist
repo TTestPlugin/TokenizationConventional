@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<!-- Bundle Development Region -->
+		<key>CFBundleDevelopmentRegion</key>
+		<string>en</string>
+		<!-- Display Name for the Extension -->
+		<key>CFBundleDisplayName</key>
+		<string>TokenizationConventional</string>
+		<!-- Bundle Identifier-->
+		<key>CFBundleIdentifier</key>
+		<string>com.ab.mobilebanking.om.WalletExtensionUI</string>
+		<!-- Executable Name -->
+		<key>CFBundleExecutable</key>
+		<string>$(EXECUTABLE_NAME)</string>
+		<!-- Info Dictionary Version -->
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<!-- Name of the Product -->
+		<key>CFBundleName</key>
+		<string>$(PRODUCT_NAME)</string>
+		<!-- Package Type for App Extension -->
+		<key>CFBundlePackageType</key>
+		<string>XPC!</string>
+		<!-- Short Version String -->
+		<key>CFBundleShortVersionString</key>
+		<string>1.0.0</string>
+		<!-- Version of the Extension -->
+		<key>CFBundleVersion</key>
+		<string>1.0.0</string>
+		<!-- NSExtension Key: Defines Extension-Specific Info -->
+		<key>NSExtension</key>
+		<dict>
+			<key>NSExtensionPointIdentifier</key>
+			<string>com.apple.PassKit.issuer-provisioning.authorization</string>
+			<key>NSExtensionPrincipalClass</key>
+			<string>$(PRODUCT_MODULE_NAME).IntentViewController</string>
+		</dict>
+		<key>NSExtensionMainStoryboard</key>
+		<string>MainInterface</string>
+	</dict>
+</plist>
