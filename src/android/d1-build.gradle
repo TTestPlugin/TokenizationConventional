@@ -30,7 +30,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging'
 	implementation 'com.huawei.hms:push:6.11.0.300'
 	
-    releaseImplementation(name: 'd1-release-d1pay-4.0.1', ext: 'aar')
-	debugImplementation(name: 'd1-debug-d1pay-4.0.1', ext: 'aar')
+    releaseImplementation(name: 'd1-release-4.1.0', ext: 'aar')
+	debugImplementation(name: 'd1-debug-4.1.0', ext: 'aar')
 	
 }

@@ -74,8 +74,8 @@
 		<source-file src="src/android/PaymentState.java" target-dir="src/com/ahlibank/tokenization/TokenizationConventional" />
 		<source-file src="src/android/TransactionSent.java" target-dir="src/com/ahlibank/tokenization/TokenizationConventional" />
 		<framework custom="true" src="src/android/d1-build.gradle" type="gradleReference" />
-		<resource-file src="src/android/libs/d1-release-d1pay-4.0.1.aar" target="libs/d1-release-d1pay-4.0.1.aar" />
-		<resource-file src="src/android/libs/d1-debug-d1pay-4.0.1.aar" target="libs/d1-debug-d1pay-4.0.1.aar" />
+		<resource-file src="src/android/libs/d1-release-4.1.0.aar" target="libs/d1-release-4.1.0.aar" />
+		<resource-file src="src/android/libs/d1-debug-4.1.0.aar" target="libs/d1-debug-4.1.0.aar" />
 	</platform>
 	<platform name="ios">
 		
