@@ -117,23 +117,20 @@ function updatePbxProj(pbxprojPath, teamID, targets, codeSignIdentity) {
                 });
             });
 
-            // 🔁 Desired LD_RUNPATH_SEARCH_PATHS block
-            const desiredRunpathBlock = `LD_RUNPATH_SEARCH_PATHS = (
-                "$(inherited)",
-                "@executable_path/Frameworks",
-                "@executable_path/../../Frameworks",
-            );`;
-            
-            // Replace all existing LD_RUNPATH_SEARCH_PATHS blocks
-            updatedPbxproj = updatedPbxproj.replace(/LD_RUNPATH_SEARCH_PATHS\s*=\s*\(([\s\S]*?)\);/g, desiredRunpathBlock);
-            
-            // If missing, inject after PRODUCT_NAME for each target
+            // Regex pattern to find and replace DEVELOPMENT_TEAM = "" with dynamic teamID
+            const devTeamPattern = /DEVELOPMENT_TEAM\s*=\s*"";/g;
+            updatedPbxproj = updatedPbxproj.replace(devTeamPattern, `DEVELOPMENT_TEAM = "${teamID}";`);
+
+            // Add the step to update the LD_RUNPATH_SEARCH_PATHS for each target
             targets.forEach(target => {
-                const productNamePattern = new RegExp(`(PRODUCT_NAME\\s*=\\s*"${target.id}";)(?![\\s\\S]*?LD_RUNPATH_SEARCH_PATHS)`, 'g');
-                updatedPbxproj = updatedPbxproj.replace(productNamePattern, `$1\n\t\t\t\t${desiredRunpathBlock}`);
+                updatedPbxproj = updatedPbxproj.replace(
+                    new RegExp(`(\\{[^}]*?PRODUCT_NAME\\s*=\\s*${target.id};[^}]*?LD_RUNPATH_SEARCH_PATHS\\s*=\\s*"@executable_path/Frameworks";|\\{[^}]*?LD_RUNPATH_SEARCH_PATHS\\s*=\\s*"@executable_path/Frameworks";[^}]*?PRODUCT_NAME\\s*=\\s*${target.id};)`, 'gs'),
+                    function (match) {
+                        return match.replace('LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";', 'LD_RUNPATH_SEARCH_PATHS = "@executable_path/../../Frameworks";');
+                    }
+                );
             });
 
-            
             fs.writeFile(pbxprojPath, updatedPbxproj, 'utf8', (err) => {
                 if (err) {
                     console.error('🚨 Error writing updated project.pbxproj:', err.message);
