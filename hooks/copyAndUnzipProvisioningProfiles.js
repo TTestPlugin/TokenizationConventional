@@ -1,99 +1,134 @@
-"use strict";
+// @ts-check
 
-const path = require("path");
-const AdmZip = require("adm-zip");
-const fs = require('fs');
+var fs = require('fs');
+var path = require('path');
+var Q = require('q');
+var { log } = require('./utils.js');
 
-var {
-    isCordovaAbove, 
-    getPlatformConfigs, 
-    getResourcesFolderPath, 
-    getZipFile, 
-    getFilesFromPath, 
-    log,
-    copyFromSourceToDestPath,
-    checkIfFolderExists
-} = require("./utils.js");
+console.log('\x1b[40m');
+log('⭐️ Copying Provisioning Profiles folder ...', 'start');
 
-var constants = {
-  osTargetFolder: "provisioning-profiles"
+// http://stackoverflow.com/a/26038979/5930772
+var copyFileSync = function (source, target) {
+  var targetFile = target;
+
+  // If target is a directory a new file with the same name will be created
+  if (fs.existsSync(target)) {
+    if (fs.lstatSync(target).isDirectory()) {
+      targetFile = path.join(target, path.basename(source));
+    }
+  }
+
+  fs.writeFileSync(targetFile, fs.readFileSync(source));
 };
 
-module.exports = function(context) {
-    log('⭐️ Started copying provisioning profiles!', 'start');
-    var cordovaAbove8 = isCordovaAbove(context, 8);
-    var cordovaAbove7 = isCordovaAbove(context, 7);
-    var defer;
-    if (cordovaAbove8) {
-        defer = require('q').defer();
+var copyFolderRecursiveSync = function (source, targetFolder) {
+  var files = [];
+
+  // Copy
+  if (fs.lstatSync(source).isDirectory()) {
+    files = fs.readdirSync(source);
+    files.forEach(function (file) {
+      var curSource = path.join(source, file);
+      if (fs.lstatSync(curSource).isDirectory()) {
+        copyFolderRecursiveSync(curSource, targetFolder);
+      } else {
+        copyFileSync(curSource, targetFolder);
+      }
+      var targetFile = path.join(targetFolder, file);
+      var fileExists = fs.existsSync(targetFile);
+      if (fileExists) {
+        log('file ' + targetFile + ' copied with success', 'success');
+      } else {
+        log('file ' + targetFile + ' copied without success', 'error');
+      }
+    });
+  }
+};
+
+function listDirectoryContents(directoryPath) {
+  const files = fs.readdirSync(directoryPath);
+
+  files.forEach(file => {
+    const fullPath = path.join(directoryPath, file);
+    const stats = fs.statSync(fullPath);
+
+    if (stats.isDirectory()) {
+      console.log(`Directory: ${fullPath}`);
+      listDirectoryContents(fullPath); // Recursively list contents
     } else {
-        defer = context.requireCordovaModule("q").defer();
+      console.log(`File: ${fullPath}`);
     }
+  });
+}
 
-    var platform = context.opts.plugin.platform;
-    var platformConfig = getPlatformConfigs(platform);
-    if (!platformConfig) {
-        log("🚨 Invalid platform", "error");
-        defer.reject();
-    }
+module.exports = function (context) {
+  var deferral = new Q.defer();
 
-    var wwwPath = getResourcesFolderPath(context, platform, platformConfig);
-    var sourceFolderPath;
-
-    sourceFolderPath = path.join(context.opts.projectRoot, "www", constants.osTargetFolder);
-
-    var provisioningProfilesZipFile = getZipFile(sourceFolderPath, constants.osTargetFolder);
-    if (!provisioningProfilesZipFile) {
-        log("🚨 No zip file found containing provisioning profiles", "error");
-        defer.reject();
-    }
-
-    var zip = new AdmZip(provisioningProfilesZipFile);
-
-    var targetPath = path.join(wwwPath, constants.osTargetFolder);
-    zip.extractAllTo(targetPath, true);
-
-    var files = getFilesFromPath(targetPath);
-    if (!files) {
-        log("🚨 No directory found: ", "error");
-        defer.reject();
-    }
-
-    // Find all files ending with .mobileprovision
-    var fileNames = files.filter(function (name) {
-        return name.endsWith('.mobileprovision');
-    });
-
-    if (!fileNames || fileNames.length === 0) {
-        log("🚨 No .mobileprovision files found", "error");
-        defer.reject();
-    }
-
-    // Create the directory if it does not exist
-    var destFolderPath = path.join(context.opts.plugin.dir, constants.osTargetFolder);
-    fs.mkdir(destFolderPath, { recursive: true }, (error) => {
-        if (error) {
-            console.error('🚨 Error creating directory:', error);
-            defer.reject();
-        } else {
-            console.log('👍 provisioning-profiles directory created successfully (or already exists)');
+  var iosFolder = context.opts.cordova.project
+    ? context.opts.cordova.project.root
+    : path.join(context.opts.projectRoot, 'platforms/ios/');
+  fs.readdir(iosFolder, function (err, data) {
+    var projectFolder;
+    var projectName;
+    var srcFolder;
+    // Find the project folder by looking for *.xcodeproj
+    if (data && data.length) {
+      data.forEach(function (folder) {
+        if (folder.match(/\.xcodeproj$/)) {
+          projectFolder = path.join(iosFolder, folder);
+          projectName = path.basename(folder, '.xcodeproj');
         }
-    });
+      });
+    }
 
-    // Iterate over all .mobileprovision files and copy each one
-    fileNames.forEach(function (fileName) {
-        var sourceFilePath = path.join(targetPath, fileName);
-        var destFilePath = path.join(destFolderPath, fileName);
+    if (!projectFolder || !projectName) {
+      log('Could not find an .xcodeproj folder in: ' + iosFolder, 'error');
+    }
 
-        copyFromSourceToDestPath(defer, sourceFilePath, destFilePath);
+    srcFolder = path.join(context.opts.plugin.dir, 'provisioning-profiles', '/');
+    if (!fs.existsSync(srcFolder)) {
+      log('🚨 Missing provisioning-profiles folder in ' + srcFolder, 'error');
+    }
 
-        var destPath = path.join(context.opts.projectRoot, "platforms", platform, "app");
-        if (checkIfFolderExists(destPath)) {
-            var platformDestFilePath = path.join(destPath, fileName);
-            copyFromSourceToDestPath(defer, sourceFilePath, platformDestFilePath);
-        }
-    });
+    var targetFolder = path.join(
+      require('os').homedir(),
+      'Library/MobileDevice/Provisioning Profiles'
+    );
+    console.log('target folder', targetFolder);
+    if (!fs.existsSync(targetFolder)) {
+      var ppFolder = path.join(require('os').homedir(), 'Library/MobileDevice');
 
-    log('✅ Successfully copied all provisioning profiles! ', 'success');
-    return defer.promise;
+      console.log(`Creating dir ${targetFolder}`);
+      fs.mkdirSync(targetFolder);
+    } else {
+      console.log(`Dir ${targetFolder} already exists`);
+    }
+
+    // List files in the destination folder before copying
+    console.log('👉 Listing contents of the target folder before copying:');
+    if (fs.existsSync(targetFolder)) {
+      listDirectoryContents(targetFolder);
+    } else {
+      console.log('🚨 Target folder does not exist.');
+    }
+
+    // Copy provisioning profiles
+    copyFolderRecursiveSync(srcFolder, targetFolder);
+
+    // List files in the destination folder after copying
+    console.log('👉 Listing contents of the target folder after copying:');
+    if (fs.existsSync(targetFolder)) {
+      listDirectoryContents(targetFolder);
+    } else {
+      console.log('🚨 Target folder does not exist after copying.');
+    }
+
+    log('✅ Successfully copied Provisioning Profiles folder!', 'success');
+    console.log('\x1b[0m'); // reset
+
+    deferral.resolve();
+  });
+
+  return deferral.promise;
 };
