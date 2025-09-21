@@ -13,6 +13,7 @@ var AppBundleID;
 var APP_PP;
 
 getProvisioningInfo();
+const { json } = require('stream/consumers');
 
 function redError(message) {
     return new Error('"' + PLUGIN_ID + '" \x1b[1m\x1b[31m' + message + '\x1b[0m');
