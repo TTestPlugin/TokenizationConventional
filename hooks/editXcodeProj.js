@@ -116,6 +116,8 @@ function updatePbxProj(pbxprojPath, teamID, targets, codeSignIdentity) {
                     return `${match}\n\t\t\t\tSWIFT_VERSION = 5;`;
                 });
             });
+			
+			/*
 
             // 🔁 Desired LD_RUNPATH_SEARCH_PATHS block
             const desiredRunpathBlock = `LD_RUNPATH_SEARCH_PATHS = (
@@ -132,6 +134,8 @@ function updatePbxProj(pbxprojPath, teamID, targets, codeSignIdentity) {
                 const productNamePattern = new RegExp(`(PRODUCT_NAME\\s*=\\s*"${target.id}";)(?![\\s\\S]*?LD_RUNPATH_SEARCH_PATHS)`, 'g');
                 updatedPbxproj = updatedPbxproj.replace(productNamePattern, `$1\n\t\t\t\t${desiredRunpathBlock}`);
             });
+			
+			*/
 
             
             fs.writeFile(pbxprojPath, updatedPbxproj, 'utf8', (err) => {
